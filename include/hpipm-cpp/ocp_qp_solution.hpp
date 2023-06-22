@@ -25,6 +25,16 @@ public:
   /// @brief Costate (the Lagrange multiplier w.r.t the state equation). 
   ///
   Eigen::VectorXd pi;
+  
+  ///
+  /// @brief the lower Lagrange multiplier w.r.t the non dynamics constraints. 
+  ///
+  Eigen::VectorXd lam_lg;
+
+  ///
+  /// @brief the upper Lagrange multiplier w.r.t the non dynamics constraints. 
+  ///
+  Eigen::VectorXd lam_ug;
 
   ///
   /// @brief Riccati matrix P. 

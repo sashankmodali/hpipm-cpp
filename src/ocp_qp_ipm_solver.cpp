@@ -209,6 +209,10 @@ HpipmStatus OcpQpIpmSolver::solve(const Eigen::VectorXd& x0,
   for (int i=0; i<=dim_.N; ++i) {
     qp_sol[i].pi.resize(dim_.nx[i]);
   }
+   for (int i=0; i<=dim_.N; ++i) {
+    qp_sol[i].lam_lg.resize(dim_.ng[i]);
+    qp_sol[i].lam_ug.resize(dim_.ng[i]);
+  }
   for (int i=0; i<=dim_.N; ++i) {
     qp_sol[i].P.resize(dim_.nx[i], dim_.nx[i]);
   }
@@ -339,6 +343,8 @@ HpipmStatus OcpQpIpmSolver::solve(const Eigen::VectorXd& x0,
     d_ocp_qp_sol_get_x(i+1, ocp_qp_sol_ptr, qp_sol[i+1].x.data());
     d_ocp_qp_sol_get_u(i, ocp_qp_sol_ptr, qp_sol[i].u.data());
     d_ocp_qp_sol_get_pi(i, ocp_qp_sol_ptr, qp_sol[i+1].pi.data());
+    d_ocp_qp_sol_get_lam_lg(i, ocp_qp_sol_ptr, qp_sol[i+1].lam_lg.data());
+    d_ocp_qp_sol_get_lam_ug(i, ocp_qp_sol_ptr, qp_sol[i+1].lam_ug.data());
     d_ocp_qp_ipm_get_ric_P(ocp_qp_ptr, ocp_qp_ipm_arg_ptr, ocp_qp_ipm_ws_ptr, i+1, qp_sol[i+1].P.data());
     d_ocp_qp_ipm_get_ric_p(ocp_qp_ptr, ocp_qp_ipm_arg_ptr, ocp_qp_ipm_ws_ptr, i+1, qp_sol[i+1].p.data());
     d_ocp_qp_ipm_get_ric_K(ocp_qp_ptr, ocp_qp_ipm_arg_ptr, ocp_qp_ipm_ws_ptr, i, qp_sol[i].K.data());
