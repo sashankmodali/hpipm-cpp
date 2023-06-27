@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 
 namespace hpipm {
@@ -119,14 +120,19 @@ const d_ocp_qp_dim* d_ocp_qp_dim_wrapper::get() const {
 
 
 void d_ocp_qp_dim_wrapper::resize(const unsigned int N) {
-  const hpipm_size_t new_memsize = d_ocp_qp_dim_memsize(N);
+  const hpipm_size_t new_memsize = (d_ocp_qp_dim_memsize(N)); //don't round
+  // const hpipm_size_t new_memsize = (d_ocp_qp_dim_memsize(N)+32-1)/32*32; //round to multiples of 32
+  // std::cout<< " NEW_MEMSIZE : " << new_memsize<<std::endl;
   if (memory_ != nullptr && new_memsize > memsize_) {
     free(memory_);
     memory_ = nullptr;
   }
   memsize_ = std::max(memsize_, new_memsize);
+  // std::cout<< " NEW_MEMSIZE_N : " << N <<std::endl;
+  // std::cout<< " NEW_MEMSIZE_maxed : " << memsize_<< "\n\n" <<std::endl;
   if (memory_ == nullptr) {
     memory_ = malloc(memsize_);
+    // memory_ = aligned_alloc(32,memsize_);
   }
   if (ocp_qp_dim_hpipm_.N != N) {
     d_ocp_qp_dim_create(N, &ocp_qp_dim_hpipm_, memory_);

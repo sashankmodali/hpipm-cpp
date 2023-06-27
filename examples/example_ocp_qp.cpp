@@ -19,6 +19,17 @@ int main() {
   const Eigen::MatrixXd S = (Eigen::MatrixXd(1, 2) << 0.0, 0.0).finished();
   const Eigen::VectorXd q = (Eigen::VectorXd(2) << 1.0, 1.0).finished();
   const Eigen::VectorXd r = (Eigen::VectorXd(1) << 0.0).finished();
+  const Eigen::MatrixXd C = (Eigen::MatrixXd(3, 2) << 1.0, 1.0, 
+                                                      0.0, 1.0,
+                                                      0.0, 0.0).finished();
+
+  const Eigen::MatrixXd D = (Eigen::MatrixXd(3, 1) << 0.0,
+                                                      0.0,
+                                                      1.0 ).finished();
+
+   const Eigen::VectorXd lg = (Eigen::VectorXd(3) << -1000.0, -1000.0, 1000.0 ).finished();
+   const Eigen::VectorXd ug = (Eigen::VectorXd(3) << 1000.0, 1000.0, 1000.0 ).finished();
+  
 
   const Eigen::VectorXd x0 = (Eigen::VectorXd(2) << 1.0, 1.0).finished();
 
@@ -27,6 +38,13 @@ int main() {
     qp[i].A = A;
     qp[i].B = B;
     qp[i].b = b;
+    if(i!=0){
+      qp[i].C = C;
+      qp[i].D = D;
+      qp[i].lg =lg;
+      qp[i].ug =ug;
+    }
+    
   }
   // cost
   for (int i=0; i<N; ++i) {
@@ -38,6 +56,10 @@ int main() {
   }
   qp[N].Q = Q;
   qp[N].q = q;
+  qp[N].C = C;
+  qp[N].lg =lg;
+  qp[N].ug =ug;
+
 
   hpipm::OcpQpIpmSolverSettings solver_settings;
   solver_settings.mode = hpipm::HpipmMode::Balance;
@@ -68,9 +90,19 @@ int main() {
     std::cout << "u[" << i << "]: " << solution[i].u.transpose() << std::endl;
   }
 
-  std::cout << "OCP QP dual solution (Lagrange multipliers): " << std::endl;
+  std::cout << "OCP QP dual solution (Lagrange multipliers - pi): " << std::endl;
   for (int i=0; i<=N; ++i) {
     std::cout << "pi[" << i << "]: " << solution[i].pi.transpose() << std::endl;
+  }
+
+  std::cout << "OCP QP dual solution (Lagrange multipliers - lam_lg): " << std::endl;
+  for (int i=0; i<=N; ++i) {
+    std::cout << "lam_lg[" << i << "]: " << solution[i].lam_lg.transpose() << std::endl;
+  }
+  
+  std::cout << "OCP QP dual solution (Lagrange multipliers - lam_ug): " << std::endl;
+  for (int i=0; i<=N; ++i) {
+    std::cout << "lam_ug[" << i << "]: " << solution[i].lam_ug.transpose() << std::endl;
   }
 
   const auto& stat = solver.getSolverStatistics();

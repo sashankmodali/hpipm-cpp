@@ -73,7 +73,8 @@ const d_ocp_qp_ipm_arg* d_ocp_qp_ipm_arg_wrapper::get() const {
 
 void d_ocp_qp_ipm_arg_wrapper::resize() {
   d_ocp_qp_dim ocp_qp_dim_hpipm; // this does nothing in the below
-  const hpipm_size_t new_memsize = d_ocp_qp_ipm_arg_memsize(&ocp_qp_dim_hpipm);
+  const hpipm_size_t new_memsize = (d_ocp_qp_ipm_arg_memsize(&ocp_qp_dim_hpipm)); //don't round
+  // const hpipm_size_t new_memsize = (d_ocp_qp_ipm_arg_memsize(&ocp_qp_dim_hpipm)+32-1)/32*32;//round to multiples of 32
   if (memory_ && new_memsize > memsize_) {
     free(memory_);
     memory_ = nullptr;
@@ -81,6 +82,7 @@ void d_ocp_qp_ipm_arg_wrapper::resize() {
   memsize_ = std::max(memsize_, new_memsize);
   if (!memory_) {
     memory_ = malloc(memsize_);
+    // memory_ = aligned_alloc(32,memsize_);
     d_ocp_qp_ipm_arg_create(&ocp_qp_dim_hpipm, &ocp_qp_ipm_arg_hpipm_, memory_);
   }
 }

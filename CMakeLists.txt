@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.11)
 project(hpipm-cpp CXX)
-set(CMAKE_CXX_STANDARD 11)
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11)
+endif()
 
 #############
 ## Options ##
@@ -62,7 +64,7 @@ endif()
 if (BUILD_TESTS)
   enable_testing()
   # coverage options
-  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} --coverage")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} --coverage -O3 -pthread -Wall")#-march=native
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
   add_library(coverage_config INTERFACE)
   if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -79,7 +81,7 @@ if (BUILD_TESTS)
   endif()
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
 endif() # end if (BUILD_TESTS)
-
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} --coverage -O3 -pthread -Wall")#-march=native
 #############
 ## Install ##
 #############
@@ -110,3 +112,6 @@ add_library(
   ${PROJECT_NAME}::${PROJECT_NAME} 
   ALIAS ${PROJECT_NAME}
 )
+
+message(WARNING "CMAKE CXX FLAGS : ${CMAKE_CXX_FLAGS}")
+message(WARNING "CMAKE CXX STANDARD : ${CMAKE_CXX_STANDARD}")

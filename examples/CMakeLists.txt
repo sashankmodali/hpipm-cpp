@@ -24,3 +24,9 @@ endmacro()
 
 add_example(example_ocp_qp)
 add_example(example_mpc)
+
+add_custom_command(
+    TARGET example_ocp_qp
+    POST_BUILD
+    COMMAND example_ocp_qp
+)

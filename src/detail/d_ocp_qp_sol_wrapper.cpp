@@ -106,7 +106,8 @@ const d_ocp_qp_sol* d_ocp_qp_sol_wrapper::get() const {
 
 void d_ocp_qp_sol_wrapper::resize(const std::shared_ptr<d_ocp_qp_dim_wrapper>& dim) {
   dim_ = dim;
-  const hpipm_size_t new_memsize = d_ocp_qp_sol_memsize(dim_->get());
+  const hpipm_size_t new_memsize = (d_ocp_qp_sol_memsize(dim_->get())); //don't round
+  // const hpipm_size_t new_memsize = (d_ocp_qp_sol_memsize(dim_->get())+32-1)/32*32; //round to multiples of 32
   if (memory_ != nullptr && new_memsize > memsize_) {
     free(memory_);
     memory_ = nullptr;
@@ -114,6 +115,7 @@ void d_ocp_qp_sol_wrapper::resize(const std::shared_ptr<d_ocp_qp_dim_wrapper>& d
   memsize_ = std::max(memsize_, new_memsize);
   if (memory_ == nullptr) {
     memory_ = malloc(memsize_);
+    // memory_ = aligned_alloc(32,memsize_);
   }
   d_ocp_qp_sol_create(dim_->get(), &ocp_qp_sol_hpipm_, memory_);
 }

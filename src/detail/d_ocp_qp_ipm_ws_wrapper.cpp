@@ -142,7 +142,8 @@ void d_ocp_qp_ipm_ws_wrapper::resize(const std::shared_ptr<d_ocp_qp_dim_wrapper>
                                      const std::shared_ptr<d_ocp_qp_ipm_arg_wrapper>& ipm_arg) {
   dim_ = dim;
   ipm_arg_ = ipm_arg;
-  const hpipm_size_t new_memsize = d_ocp_qp_ipm_ws_memsize(dim_->get(), ipm_arg_->get());
+  const hpipm_size_t new_memsize = (d_ocp_qp_ipm_ws_memsize(dim_->get(), ipm_arg_->get())); //don't round
+  // const hpipm_size_t new_memsize = (d_ocp_qp_ipm_ws_memsize(dim_->get(), ipm_arg_->get())+32-1)/32*32; //round to multiples of 32
   if (memory_ != nullptr && new_memsize > memsize_) {
     free(memory_);
     memory_ = nullptr;
@@ -150,6 +151,7 @@ void d_ocp_qp_ipm_ws_wrapper::resize(const std::shared_ptr<d_ocp_qp_dim_wrapper>
   memsize_ = std::max(memsize_, new_memsize);
   if (memory_ == nullptr) {
     memory_ = malloc(memsize_);
+    // memory_ = aligned_alloc(32,memsize_);
   }
   d_ocp_qp_ipm_ws_create(dim_->get(), ipm_arg_->get(), &ocp_qp_ipm_ws_hpipm_, memory_);
 }
